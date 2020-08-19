@@ -62,7 +62,7 @@ void loop()
   Serial.println();
 }
 
-float max31855Read(int max31855_cs_pin)
+float max6675Read(int max31855_cs_pin)
 {
   unsigned int data;
 
