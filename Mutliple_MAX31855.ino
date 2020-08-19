@@ -16,9 +16,9 @@ const int     spi_miso_pin      = 12;
 const int     spi_sck_pin       = 13;
 const byte    max31855_num      = 8;
 const int     max31855_cs_pins[max31855_num] = {  3,4 };
-SPISettings   max31855_spi(1000000, MSBFIRST, SPI_MODE1);               // Definizione protocollo caratteristiche protocollo SPI
+SPISettings   max31855_spi(1000000, MSBFIRST, SPI_MODE1);               
 
-MAX31855 max31855s[max31855_num]=                                       // Creazione di tutti i moduli
+MAX31855 max31855s[max31855_num]=                                       
 {
   MAX31855(spi_sck_pin, max31855_cs_pins[0], spi_miso_pin),
   MAX31855(spi_sck_pin, max31855_cs_pins[1], spi_miso_pin)
@@ -32,8 +32,8 @@ void setup()
   
   for(i=0; i<max31855_num; i++)
   {
-    pinMode(max31855_cs_pins[i],OUTPUT);                                // Definizione dei pin Chip Select come Output
-    digitalWrite(max31855_cs_pins[i],HIGH);                             // Chip select alti per inizializzare tutte le comunicazioni.
+    pinMode(max31855_cs_pins[i],OUTPUT);                                
+    digitalWrite(max31855_cs_pins[i],HIGH);                             
   }
 
   
@@ -52,7 +52,7 @@ void loop()
   
   for(i=0; i<max31855_num; i++)
   {
-    value = max31855Read(max31855_cs_pins[i]);//[i].getTemperature();
+    value = max31855Read(max31855_cs_pins[i]);
     if(mov_avgs[i]==-100) mov_avgs[i] = value;
     mov_avgs[i] = mov_avg_alpha*value + (1-mov_avg_alpha)*mov_avgs[i];
     Serial.print(round(mov_avgs[i]));
