@@ -1,3 +1,14 @@
+/* 
+
+This code has been written on the base of the one used in the video at the following link:
+
+https://www.youtube.com/watch?v=qub3yzqEwek
+
+All the rights to the original developer.
+
+*/
+
+
 #include "MAX31855.h"
 #include <SPI.h>
 
