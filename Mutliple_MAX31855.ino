@@ -14,7 +14,7 @@ All the rights to the original developer.
 
 const int     spi_miso_pin      = 12;
 const int     spi_sck_pin       = 13;
-const byte    max31855_num      = 8;
+const byte    max31855_num      = 2;
 const int     max31855_cs_pins[max31855_num] = {  3,4 };
 SPISettings   max31855_spi(1000000, MSBFIRST, SPI_MODE1);               
 
