@@ -9,7 +9,6 @@ All the rights to the original developer.
 */
 
 
-#include "MAX31855.h"
 #include <SPI.h>
 
 const int     spi_miso_pin      = 12;
@@ -18,12 +17,6 @@ const byte    max31855_num      = 2;
 const int     max31855_cs_pins[max31855_num] = {  3,4 };
 SPISettings   max31855_spi(1000000, MSBFIRST, SPI_MODE1);               
 
-MAX31855 max31855s[max31855_num]=                                       
-{
-  MAX31855(spi_sck_pin, max31855_cs_pins[0], spi_miso_pin),
-  MAX31855(spi_sck_pin, max31855_cs_pins[1], spi_miso_pin)
-
-};
 
 void setup()
 {
@@ -62,24 +55,52 @@ void loop()
   Serial.println();
 }
 
+
+
+/*Modified according to Adafruit-MAX31855 library
+* https://github.com/adafruit/Adafruit-MAX31855-library/blob/47d42486e0d625695806c39dbc995b407f0d66a7/Adafruit_MAX31855.cpp#L121
+*/
 float max31855Read(int max31855_cs_pin)
 {
-  unsigned int data;
+
+  uint8_t buf[4];
+  int32_t v = 0;
 
   SPI.beginTransaction(max31855_spi);
   digitalWrite(max31855_cs_pin, LOW);
-
-  data = SPI.transfer16(0);
-
+  SPI.transfer(&buf, 4); //MAX31855 memory map is 32bit
   digitalWrite(max31855_cs_pin, HIGH);
   SPI.endTransaction();
 
-  if(data & 0x0004)
+  /*from buffer of 4 bytes to uint32_t */
+  v = buf[0];
+  v <<= 8;
+  v |= buf[1];
+  v <<= 8;
+  v |= buf[2];
+  v <<= 8;
+  v |= buf[3];
+
+  if (v & 0x7)
   {
+    // uh oh, a serious problem!
     return NAN;
+  }
+
+  if (v & 0x80000000)
+  {
+    // Negative value, drop the lower 18 bits and explicitly extend sign bits.
+    v = 0xFFFFC000 | ((v >> 18) & 0x00003FFF);
   }
   else
   {
-    return(data>>3)/4;
+    // Positive value, just drop the lower 18 bits.
+    v >>= 18;
   }
+
+  double centigrade = v;
+
+  // LSB = 0.25 degrees C
+  centigrade *= 0.25;
+  return centigrade;
 }
