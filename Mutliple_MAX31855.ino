@@ -37,16 +37,38 @@ void setup()
 
 void loop()
 {
+  
   const float mov_avg_alpha = 0.1;
-  static float mov_avgs[max31855_num] = {-100, -100, };
+  static float mov_avgs[max31855_num] = {-100, -100 };
   double  value;
   int     i;
-  delay (85);
-
+  int state;
+  delay (85); 
   for(i=0; i<max31855_num; i++)
+  { //Comando di lettura al sensore
+    state = max31855s[i].read();
+    switch(state)
   {
-    //Comando di lettura al sensore
-    max31855s[i].read();
+  case'0':
+  {
+    Serial.print("Error! Thermocouple open circuit");
+    Serial.println();
+  }
+  case'1':
+  {
+    Serial.print("Error! Thermocouple short to GND");
+    Serial.println();
+  }
+  case'2':
+  {
+    Serial.print("Error! Thermocouple short to VCC");
+    Serial.println();
+  }
+  default:
+  Serial.print("Tehermocouple ");
+  Serial.print(i);
+  Serial.print(" working properly.\t Temperature: \t");
+}
     //Conversione del dato
     value = max31855s[i].getTemperature();
     //Se ti serve internal puoi usare riga seguente
