@@ -27,18 +27,80 @@ MAX31855 max31855s[max31855_num]=
 
 void setup()
 {
-  int i;
-
-  
-  for(i=0; i<max31855_num; i++)
-  {
-    pinMode(max31855_cs_pins[i],OUTPUT);                                
-    digitalWrite(max31855_cs_pins[i],HIGH);                             
-  }
-
-  
-  SPI.begin();
-  Serial.begin(9600);
+  Serial.begin(115200); //Inizializzazine comunicazione seriale;;
+  Serial.print("Starting...");
+  Serial.println();
+	int i;
+	for (i = 0; i < max31855_num; i++)
+	{
+		max31855s[i].begin();	//Inizializzazione dei moduli MAX31855
+    delay(200);
+    int state;
+    max31855s[i].read();
+    state = max31855s[i].getStatus();
+    switch (state)
+    {
+      case 0:
+      {
+      Serial.print("Thermocouple ");
+      Serial.print( i +1 );
+      Serial.print(" working properly!\n");
+      Serial.println();
+      break;
+      }
+      case 1:
+      {      
+      Serial.print("Thermocouple ");
+      Serial.print( i +1 );
+      Serial.print(" open circuit!\n");
+      Serial.println();
+      break;
+      }
+      case 2:
+      {      
+      Serial.print("Thermocouple ");
+      Serial.print( i +1 );
+      Serial.print(" short to GND!\n");
+      Serial.println();
+      break;
+      }
+      case 3:
+      {
+      Serial.print("Thermocouple ");
+      Serial.print( i +1 );
+      Serial.print(" short to VCC!\n");
+      Serial.println();
+      break;
+      }
+      case 7:
+      {
+      Serial.print("Thermocouple ");
+      Serial.print( i +1 );
+      Serial.print(" generic error, check wiring \n");
+      Serial.println();
+      break;
+      }
+      case 128:
+      {
+      Serial.print("Thermocouple ");
+      Serial.print( i +1 );
+      Serial.print(" no read done yet,check wiring!\n");
+      Serial.println();
+      break;
+      }
+      case 129:
+      {
+      Serial.print("Thermocouple ");
+      Serial.print( i +1 );
+      Serial.print(" no communication,check wiring!\n");
+      Serial.println();
+      break;
+      }
+    
+    
+    }
+	}
+		
 }
 
 void loop()
@@ -62,24 +124,3 @@ void loop()
   Serial.println();
 }
 
-float max31855Read(int max31855_cs_pin)
-{
-  unsigned int data;
-
-  SPI.beginTransaction(max31855_spi);
-  digitalWrite(max31855_cs_pin, LOW);
-
-  data = SPI.transfer16(0);
-
-  digitalWrite(max31855_cs_pin, HIGH);
-  SPI.endTransaction();
-
-  if(data & 0x0004)
-  {
-    return NAN;
-  }
-  else
-  {
-    return(data>>3)/4;
-  }
-}
