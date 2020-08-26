@@ -1,10 +1,10 @@
 /* 
 
-This code has been written on the base of the one used in the video at the following link:
+Author: Fabio Brondo
+Date: 2020/08/25
+Purpose: Read more MAX31855 and get errors, temperature and raw data from the sensors.
 
-https://www.youtube.com/watch?v=qub3yzqEwek
-
-All the rights to the original developer.
+Special thanks to @pmarchini and @robtillaart for the effort.
 
 */
 
